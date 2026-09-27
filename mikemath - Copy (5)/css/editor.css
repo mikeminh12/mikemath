@@ -1,0 +1,281 @@
+.mikemath-editor-wrapper {
+  border: 2px solid #1e293b;
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 4px 4px 0px #1e293b;
+  overflow: hidden;
+  font-family: inherit;
+}
+
+/* Toolbar Style */
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border-bottom: 2px solid #1e293b;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding-right: 6px;
+  border-right: 1px solid #cbd5e1;
+}
+
+.toolbar-group:last-child {
+  border-right: none;
+}
+
+.editor-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 2px 6px;
+  background: #ffffff;
+  border: 1.5px solid #1e293b;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  user-select: none;
+}
+
+.editor-btn:hover {
+  background-color: #e0e7ff;
+  transform: translateY(-1px);
+  box-shadow: 2px 2px 0px #1e293b;
+}
+
+.editor-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0px 0px 0px #1e293b;
+}
+
+/* Content Editable Area */
+.editor-content-area {
+  padding: 12px;
+}
+
+.editor-editable {
+  outline: none;
+  line-height: 1.6;
+  font-size: 1rem;
+  color: #0f172a;
+  overflow-y: auto;
+}
+
+.editor-editable p,
+.content-rich-text p {
+  margin-top: 0;
+  margin-bottom: 0.65rem;
+}
+
+.editor-editable p:last-child,
+.content-rich-text p:last-child {
+  margin-bottom: 0;
+}
+
+.editor-editable[data-placeholder]:empty:before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
+  cursor: text;
+}
+
+/* Math Node Rendering */
+.math-formula-node {
+  display: inline-block;
+  margin: 0 2px;
+  padding: 1px 4px;
+  background-color: #f1f5f9;
+  border: 1px dashed #94a3b8;
+  border-radius: 4px;
+  vertical-align: middle;
+  user-select: all;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.math-formula-node:hover {
+  background-color: #e0e7ff;
+  border-color: #6366f1;
+}
+
+/* Hide KaTeX MathML screen-reader fallback text so it doesn't render as raw text next to math formulas */
+.katex-mathml {
+  display: none !important;
+}
+
+/* Global Text Alignment Rules (Editor, Preview & Detail renders) */
+[style*="text-align: center"],
+[style*="text-align:center"],
+[align="center"],
+p[align="center"],
+div[align="center"],
+.text-center {
+  text-align: center !important;
+}
+
+[style*="text-align: right"],
+[style*="text-align:right"],
+[align="right"],
+p[align="right"],
+div[align="right"],
+.text-right {
+  text-align: right !important;
+}
+
+[style*="text-align: left"],
+[style*="text-align:left"],
+[align="left"],
+p[align="left"],
+div[align="left"],
+.text-left {
+  text-align: left !important;
+}
+
+[style*="text-align: justify"],
+[style*="text-align:justify"],
+.text-justify {
+  text-align: justify !important;
+}
+
+.editor-preview-box {
+  padding: 14px;
+  border: 2px solid #1e293b;
+  border-radius: 8px;
+  background: #f8fafc;
+  min-height: 80px;
+}
+
+.block-editor-box {
+  margin-top: 4px;
+}
+
+.block-editor-box .mikemath-editor-wrapper {
+  border-width: 1px;
+  border-color: #cbd5e1;
+  box-shadow: none;
+  border-radius: 8px;
+}
+
+.block-editor-box .editor-toolbar {
+  padding: 4px 8px;
+  gap: 4px;
+  background: #f1f5f9;
+}
+
+.block-editor-box .editor-btn {
+  min-width: 24px;
+  height: 24px;
+  font-size: 0.78rem;
+  padding: 1px 4px;
+}
+
+/* ==========================================
+ * IMAGE OVERFLOW PREVENTION & MULTI-IMAGE STYLES
+ * ========================================== */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.article-image-wrapper,
+.block-image,
+.image-block-preview,
+.image-block-grid,
+.preview-item,
+.content-rich-text img,
+.article-main-body img,
+.editor-editable img {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.article-image-wrapper img,
+.block-image img,
+.image-block-preview img,
+.image-block-grid img,
+.image-preview-card img {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  border-radius: 6px;
+}
+
+/* Multi-image grid layout in renderer */
+.image-block-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.image-block-grid .article-image-wrapper {
+  margin: 0;
+  max-width: 100%;
+}
+
+.image-block-grid.multi-images .article-image-wrapper {
+  flex: 1 1 280px;
+  max-width: 100%;
+}
+
+/* Form UI for image block preview & management */
+.image-preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.image-preview-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.image-preview-card .img-thumb-box {
+  width: 80px;
+  height: 60px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #cbd5e1;
+}
+
+.image-preview-card .img-thumb-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-preview-card .img-info-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.image-preview-card .img-action-box {
+  flex-shrink: 0;
+}

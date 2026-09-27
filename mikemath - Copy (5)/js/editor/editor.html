@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MikeMath - MathEditor Component</title>
+  
+  <!-- KaTeX CDN cho việc render công thức -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+  <!-- Style CSS của MathEditor -->
+  <link rel="stylesheet" href="./css/editor.css">
+</head>
+<body>
+
+  <div style="max-width: 900px; margin: 40px auto; padding: 0 20px;">
+    <h2>MikeMath Editor Demo</h2>
+    
+    <!-- Container nơi MathEditor sẽ được render -->
+    <div id="math-editor-app"></div>
+
+    <!-- Khung xem trước (Preview) kết quả đầu ra -->
+    <div style="margin-top: 20px;">
+      <h3>Kết quả Render (Output KaTeX):</h3>
+      <div id="preview-output" class="editor-preview-box"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { MathEditor } from './js/editor/MathEditor.js';
+
+    // Khởi tạo Editor
+    const editor = new MathEditor('#math-editor-app', {
+      placeholder: 'Xét tam giác ABC vuông tại A, có ∠B = 60°...',
+      minHeight: '220px',
+      onChange: (html, latex) => {
+        // Cập nhật preview realtime
+        const previewEl = document.getElementById('preview-output');
+        if (previewEl) previewEl.innerHTML = html;
+      }
+    });
+
+    // Xuất ra window để tiện debug trong Console
+    window.mathEditor = editor;
+  </script>
+</body>
+</html>

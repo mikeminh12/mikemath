@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Đã Nộp - MikeMath</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div id="navbar"></div>
+
+    <main class="container problems-page">
+
+        <!-- ================= Header & Summary Stats ================= -->
+        <section class="page-header nohover card">
+            <div>
+                <h1><i class="fa-solid fa-file-signature" style="color: var(--primary);"></i> Bài đã nộp</h1>
+                <p>Lưu lại toàn bộ lịch sử làm bài và đánh giá từ AI.</p>
+            </div>
+
+            <!-- Stats Bar dùng style nhóm nút action -->
+            <div class="header-actions">
+                <a href="problems.html" class="btn-primary">
+                    + Làm bài mới
+                </a>
+            </div>
+        </section>
+
+        <!-- Thống kê dạng Grid thẻ Card -->
+        <section class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 16px;">
+            <div class="card" style="padding: 16px; text-align: center;">
+                <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Đã nộp</div>
+                <div style="font-size: 1.5rem; font-weight: 900; margin-top: 4px;" id="statTotalSubmitted">--</div>
+            </div>
+            <div class="card" style="padding: 16px; text-align: center;">
+                <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Điểm TB</div>
+                <div style="font-size: 1.5rem; font-weight: 900; color: var(--primary); margin-top: 4px;" id="statAvgScore">--</div>
+            </div>
+            <div class="card" style="padding: 16px; text-align: center;">
+                <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Tỷ lệ hoàn thành</div>
+                <div style="font-size: 1.5rem; font-weight: 900; color: #16a34a; margin-top: 4px;" id="statCompletionRate">--%</div>
+            </div>
+            <div class="card" style="padding: 16px; text-align: center;">
+                <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Nộp hôm nay</div>
+                <div style="font-size: 1.5rem; font-weight: 900; margin-top: 4px;" id="statTodayCount">--</div>
+            </div>
+        </section>
+
+<!-- ================= Toolbar ================= -->
+<section class="card nohover toolbar">
+    <div class="toolbar-left" style="flex-wrap: wrap;">
+        <input type="search" id="filterSearch" placeholder="Tìm theo tên bài...">
+
+        <select id="filterGrade">
+            <option value="">Tất cả Lớp</option>
+            <option value="6">Lớp 6</option>
+            <option value="7">Lớp 7</option>
+            <option value="8">Lớp 8</option>
+            <option value="9">Lớp 9</option>
+        </select>
+
+        <select id="filterScore">
+            <option value="">Tất cả Điểm</option>
+            <option value="0-5">0 - 5 điểm</option>
+            <option value="5-8">5 - 8 điểm</option>
+            <option value="8-10">8 - 10 điểm</option>
+        </select>
+
+        <select id="filterStatus">
+            <option value="">Tất cả Trạng thái</option>
+            <option value="processing">🟡 Đang xử lý</option>
+            <option value="completed">🟢 Đã hoàn thành</option>
+            <option value="failed">🔴 AI Lỗi</option>
+        </select>
+
+        <select id="filterType">
+            <option value="">Tất cả Loại</option>
+            <option value="image">📷 Ảnh</option>
+            <option value="text">✍️ Text</option>
+            <option value="mixed">📦 Mixed</option>
+        </select>
+    </div>
+
+    <!-- Nhóm nút chuyển kiểu xem -->
+    <div class="toolbar-right">
+        <button id="listViewBtn" class="view-btn active">📋 Danh sách</button>
+        <button id="postViewBtn" class="view-btn">📰 Bài đăng</button>
+    </div>
+</section>
+
+<!-- ================= Submissions List Container ================= -->
+<section id="submissionsContainer" class="problem-list"></section>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="card hidden" style="text-align: center; padding: 40px 20px;">
+            <div style="font-size: 3rem; margin-bottom: 12px;">📄</div>
+            <h3 style="font-weight: 800;">Bạn chưa nộp bài nào</h3>
+            <p style="color: var(--text-muted); margin-bottom: 16px;">Hãy bắt đầu giải bài tập để lưu lại lịch sử học tập nhé!</p>
+            <a href="problems.html" class="btn-primary">🚀 Làm bài ngay</a>
+        </div>
+
+        <!-- Load More Button -->
+        <div style="text-align: center; margin-top: 24px;">
+            <button id="btnLoadMore" class="btn-secondary hidden">Xem thêm bài nộp</button>
+        </div>
+
+    </main>
+
+    <div id="footer"></div>
+
+    <script src="js/load-components.js"></script>
+    <script type="module" src="js/submitted.js"></script>
+</body>
+</html>

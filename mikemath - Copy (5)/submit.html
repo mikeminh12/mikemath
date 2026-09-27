@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nộp bài giải - MikeMath</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/editor.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <style>
+        .submit-page {
+            padding-top: 24px;
+            padding-bottom: 40px;
+        }
+
+        .submit-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 992px) {
+            .submit-layout {
+                grid-template-columns: 3fr 1fr;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Mode Selector */
+        .mode-selector {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .mode-selector label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Drag & Drop Area */
+        .drop-zone {
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 32px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #f8fafc;
+        }
+
+        .drop-zone.dragover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        /* Preview Grid */
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .preview-card {
+            position: relative;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
+            padding: 4px;
+        }
+
+        .preview-thumb {
+            width: 100%;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .preview-info {
+            font-size: 0.75rem;
+            margin-top: 4px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .preview-size {
+            color: #64748b;
+        }
+
+        .btn-remove-img {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        /* Meta details */
+        .problem-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+            background: #f1f5f9;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        /* Result Card */
+        .card-result {
+            margin-top: 24px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar dynamic -->
+    <div id="navbar"></div>
+
+    <main class="container submit-page">
+
+        <div class="submit-layout">
+
+            <!-- CỘT TRÁI (3/4 trên Desktop) -->
+            <div class="submit-main">
+
+                <!-- Card 1: Thông tin bài toán -->
+                <section class="card nohover" style="margin-bottom: 24px;">
+                    <span style="font-size: 0.85rem; color: #64748b;">Đang nộp bài cho:</span>
+                    <h2 id="problemTitle" style="color: #2563eb; margin-top: 4px;">Đang tải thông tin...</h2>
+                    
+                    <div class="problem-meta-grid">
+                        <div><strong>Tác giả:</strong> <span id="problemAuthor">--</span></div>
+                        <div><strong>Khối lớp:</strong> <span id="problemGrade">--</span></div>
+                        <div><strong>Chủ đề:</strong> <span id="problemTopic">--</span></div>
+                        <div><strong>Độ khó:</strong> <span id="problemDifficulty">--</span></div>
+                    </div>
+                </section>
+
+                <!-- Card 2: Form nộp bài -->
+                <section class="card nohover">
+                    <h3 style="margin-bottom: 16px;">📥 Chọn phương thức nộp bài</h3>
+
+<!-- Cập nhật mode-selector trong submit.html -->
+<div class="mode-selector">
+    <label>
+        <input type="radio" name="submitMode" value="image" checked>
+        📷 Tải ảnh bài giải
+    </label>
+    <label>
+        <input type="radio" name="submitMode" value="text">
+        ✍️ Nhập văn bản / LaTeX
+    </label>
+</div>
+
+<!-- Thêm tùy chọn quét QR vào giao diện cardUpload -->
+<div id="cardUpload">
+    <div class="drop-zone" id="dropZone">
+        <p style="margin: 0; color: #475569;">Kéo & thả ảnh vào đây hoặc <strong style="color: #2563eb;">bấm để chọn file</strong></p>
+        <span style="font-size: 0.8rem; color: #94a3b8;">(Hỗ trợ các định dạng hình ảnh PNG, JPG, JPEG)</span>
+        <input type="file" id="fileInput" accept="image/*" multiple class="hidden">
+    </div>
+
+    <!-- Nút bấm hiển thị QR Code -->
+    <div style="text-align: center; margin-top: 12px;">
+        <button type="button" id="btnQrUpload" class="btn-secondary" style="padding: 8px 16px; cursor: pointer;">
+            📱 Chụp ảnh bằng điện thoại qua mã QR
+        </button>
+    </div>
+
+    <div id="previewGrid" class="preview-grid"></div>
+</div>
+
+<!-- Modal QR Code popup trên máy tính -->
+<div id="qrModal" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+    <div style="background: white; padding: 24px; border-radius: 12px; text-align: center; max-width: 360px; width: 90%;">
+        <h3>Quét mã QR để chụp ảnh</h3>
+        <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">Dùng camera điện thoại quét mã dưới đây để mở giao diện chụp hình.</p>
+        
+        <div id="qrCodeContainer" style="margin: 16px auto; display: flex; justify-content: center;"></div>
+        
+        <div id="qrStatus" style="font-size: 0.85rem; color: #2563eb; margin-bottom: 12px;">Đang chờ điện thoại tải ảnh lên...</div>
+        
+        <button type="button" id="btnCloseQrModal" style="padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; cursor: pointer;">Đóng</button>
+    </div>
+</div>
+
+<!-- Đã bổ sung thư viện qrcode.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+                    <form id="submissionForm">
+
+                        <!-- Mode 2: Nhập Text -->
+                        <div id="cardText" class="hidden">
+                            <label style="display: block; font-weight: 700; margin-bottom: 8px;">📝 Lời giải chi tiết & Công thức toán:</label>
+                            <div id="solution-editor-container" class="mb-2"></div>
+                            <textarea 
+                                id="solutionText" 
+                                rows="6" 
+                                class="hidden"
+                                placeholder="Nhập lời giải hoặc công thức toán học..."></textarea>
+                            <div style="text-align: right; font-size: 0.85rem; color: #64748b; margin-top: 4px;">
+                                Số ký tự: <span id="charCount">0</span>
+                            </div>
+                        </div>
+
+                        <!-- Nút nộp bài & Trạng thái -->
+                        <div style="margin-top: 24px;">
+                            <div id="loadingStatus" class="hidden" style="margin-bottom: 12px; color: #2563eb; font-weight: 600;"></div>
+                            <button type="submit" id="submitBtn" class="btn-primary" style="width: 100%; padding: 12px; font-size: 1rem;">
+                                🚀 Gửi bài làm
+                            </button>
+                        </div>
+
+                    </form>
+                </section>
+
+                <!-- Card 3: Kết quả chấm bài AI -->
+                <section id="cardResult" class="card-result hidden">
+                    <h3 style="color: #166534; margin-bottom: 12px;">✅ Kết quả đánh giá</h3>
+                    <div style="font-size: 1.25rem; font-weight: bold; margin-bottom: 8px;">
+                        Điểm số: <span id="resultScore" style="color: #2563eb;">0</span>/10
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <strong>Nhận xét:</strong>
+                        <p id="resultFeedback" style="margin-top: 4px; color: #334155;"></p>
+                    </div>
+                    <div>
+                        <strong>Kiến thức liên quan:</strong>
+                        <div id="resultKnowledge" style="margin-top: 8px;"></div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- CỘT PHẢI (1/4 trên Desktop): Quy định -->
+            <aside class="submit-sidebar"">
+                <div class="card" style="position: sticky; top: 100px;">
+                    <h3 style="margin-bottom: 12px;">📌 Quy định nộp bài</h3>
+                    <ul style="padding-left: 20px; font-size: 0.9rem; line-height: 1.6; color: #475569;">
+                        <li>Đảm bảo bài làm tự viết hoặc trình bày rõ ràng.</li>
+                        <li>Ảnh tải lên không bị mờ, lóa sáng hoặc mất góc.</li>
+                        <li>Hệ thống AI sẽ tự động chấm điểm sơ bộ trước khi giáo viên duyệt.</li>
+                    </ul>
+                </div>
+            </aside>
+            <!-- Modal QR Code popup trên máy tính -->
+<div id="qrModal" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+    <div style="background: white; padding: 24px; border-radius: 12px; text-align: center; max-width: 360px; width: 90%;">
+        <h3>Quét mã QR để chụp ảnh</h3>
+        <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">Dùng camera điện thoại quét mã dưới đây để mở giao diện chụp hình.</p>
+        
+        <div id="qrCodeContainer" style="margin: 16px auto; display: flex; justify-content: center;"></div>
+        
+        <div id="qrStatus" style="font-size: 0.85rem; color: #2563eb; margin-bottom: 12px;">Đang chờ điện thoại tải ảnh lên...</div>
+        
+        <button type="button" id="btnCloseQrModal" style="padding: 8px 16px; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; cursor: pointer;">Đóng</button>
+    </div>
+</div>
+
+<!-- 🔴 THÊM MODAL XEM PREVIEW ẢNH PHÓNG TO -->
+<div id="imgPreviewModal" class="hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px;">
+    <span id="closeImgModal" style="position: absolute; top: 16px; right: 24px; color: white; font-size: 36px; font-weight: bold; cursor: pointer;">&times;</span>
+    <img id="modalPreviewImage" src="" alt="Xem trước" style="max-width: 90%; max-height: 80vh; border-radius: 8px; object-fit: contain; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+    <p id="modalPreviewName" style="color: #cbd5e1; margin-top: 12px; font-size: 0.9rem;"></p>
+</div>
+        </div>
+
+    </main>
+
+    <!-- Footer dynamic -->
+    <div id="footer"></div>
+
+    <script src="js/load-components.js"></script>
+    <script type="module" src="js/submit.js"></script>
+
+</body>
+
+</html>

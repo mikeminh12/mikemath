@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý & Soạn Thảo Kiến Thức - MikeMath Admin</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/editor.css">
+
+    <!-- MathLive CSS & Engine -->
+    <link rel="stylesheet" href="https://unpkg.com/mathlive/dist/mathlive-static.css">
+    <script defer src="https://unpkg.com/mathlive"></script>
+
+    <!-- MathJax rendering -->
+    <script>
+        window.MathJax = {
+            options: {
+                ignoreHtmlClass: 'math-formula-node|katex|katex-html|katex-mathml'
+            },
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <div id="navbar"></div>
+
+    <main class="container knowledge-manager-page">
+
+        <!-- Breadcrumb & Top Bar -->
+        <section class="result-info flex-between">
+            <nav class="breadcrumb-links">
+                <a href="knowledge.html">🏠 Thư viện</a> &gt; 
+                <span class="active" id="currentPageTitle">Quản lý & Soạn thảo Kiến thức</span>
+            </nav>
+            <div class="top-actions">
+                <button type="button" id="btnNewNode" class="btn-primary">+ Tạo mới (Reset Form)</button>
+            </div>
+        </section>
+
+        <!-- LAYOUT QUẢN LÝ 3 CỘT -->
+        <div class="knowledge-dashboard-grid">
+
+            <!-- CỘT 1: DANH SÁCH CÂY KIẾN THỨC (MANAGEMENT SIDEBAR) -->
+            <div class="dashboard-sidebar nohover card">
+                <div class="sidebar-header">
+                    <h3>📂 Cây Kiến Thức</h3>
+                    <input type="text" id="searchTreeInput" class="form-control form-control-sm" placeholder="🔍 Tìm thư mục / bài viết...">
+                </div>
+                <div id="knowledgeTreeContainer" class="knowledge-tree-list">
+                    <p class="text-muted text-center p-3">Đang tải cây kiến thức...</p>
+                </div>
+            </div>
+
+            <!-- CỘT 2: FORM SOẠN THẢO / CHỈNH SỬA -->
+            <div class="editor-form-col nohover card">
+                <div class="form-header-badge">
+                    <span id="editingStatusBadge" class="badge badge-success">✨ Đang chế độ: TẠO MỚI</span>
+                    <button type="button" id="btnDeleteCurrent" class="btn-sm btn-danger hidden">🗑️ Xóa Node này</button>
+                </div>
+
+                <!-- 1. Chọn loại Node -->
+                <div class="form-group node-type-selector">
+                    <label class="form-label">Loại Node:</label>
+                    <div class="radio-group">
+                        <label class="radio-card">
+                            <input type="radio" name="nodeType" value="article" checked>
+                            <span class="radio-custom">📄 Bài kiến thức</span>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="nodeType" value="folder">
+                            <span class="radio-custom">📁 Thư mục</span>
+                        </label>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <!-- 2. Vị trí trong cây -->
+                <div class="form-group">
+                    <label for="parentFolderSelect" class="form-label">Thư mục cha *</label>
+                    <select id="parentFolderSelect" class="form-control">
+                        <option value="">🌳 Root (Cấp cao nhất)</option>
+                    </select>
+                </div>
+
+                <!-- FORM CỦA FOLDER -->
+                <div id="folderFields" class="node-fields hidden">
+                    <div class="form-group">
+                        <label for="folderName" class="form-label">Tên thư mục *</label>
+                        <input type="text" id="folderName" class="form-control" placeholder="VD: Hình học">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="folderSlug" class="form-label">Slug URL</label>
+                            <input type="text" id="folderSlug" class="form-control" placeholder="hinh-hoc">
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="folderIcon" class="form-label">Biểu tượng (Icon)</label>
+                            <input type="text" id="folderIcon" class="form-control" placeholder="📁 hoặc 📐">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="folderDesc" class="form-label">Mô tả ngắn</label>
+                        <textarea id="folderDesc" class="form-control" rows="2" placeholder="Tóm tắt nội dung thư mục..."></textarea>
+                    </div>
+                </div>
+
+                <!-- FORM CỦA ARTICLE -->
+                <div id="articleFields" class="node-fields">
+                    <div class="form-group">
+                        <label for="articleTitle" class="form-label">Tiêu đề bài học *</label>
+                        <input type="text" id="articleTitle" class="form-control" placeholder="VD: Định lý Pythagore">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="articleSlug" class="form-label">Slug URL *</label>
+                        <input type="text" id="articleSlug" class="form-control" placeholder="dinh-ly-pythagore">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="articleSummary" class="form-label">Mô tả ngắn (Summary)</label>
+                        <textarea id="articleSummary" class="form-control" rows="2" placeholder="Tóm tắt lý thuyết chính..."></textarea>
+                    </div>
+
+                    <!-- Visual Math Editor Quick Panel -->
+                    <div class="card nohover math-editor-quick-panel">
+                        <div class="math-panel-header">
+                            <span class="panel-title">🧮 Trình soạn thảo Công thức toán trực quan</span>
+                            <button type="button" id="btnToggleVirtualKeyboard" class="btn-sm btn-outline">⌨️ Mở bàn phím</button>
+                        </div>
+                        <div class="math-panel-body">
+                            <math-field id="globalVisualMathInput" class="math-field-input">
+                                x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+                            </math-field>
+                            <div class="latex-preview-tag">
+                                <strong>LaTeX Output:</strong> <code id="latexPreviewText">x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}</code>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Block Editor Dynamic -->
+                    <div class="block-editor-container">
+                        <label class="form-label">Nội dung bài học (Block Editor):</label>
+                        <div id="blockList" class="block-list"></div>
+
+                        <div class="add-block-menu">
+                            <button type="button" class="btn-secondary dropdown-toggle" id="addBlockBtn">+ Thêm Block nội dung</button>
+                            <div id="blockMenuDropdown" class="dropdown-menu hidden">
+                                <button type="button" data-type="definition">📖 Khái niệm / Định nghĩa</button>
+                                <button type="button" data-type="formula">🧮 Công thức toán học</button>
+                                <button type="button" data-type="remember">✔ Mẹo / Cần nhớ</button>
+                                <button type="button" data-type="example">💡 Ví dụ mẫu</button>
+                                <button type="button" data-type="text">📄 Đoạn văn bản (Text)</button>
+                                <button type="button" data-type="image">🖼️ Hình ảnh</button>
+                                <button type="button" data-type="quote">💬 Trích dẫn</button>
+                                <button type="button" data-type="code">💻 Code</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="divider">
+
+                    <!-- Visibility Selection -->
+                    <div class="form-group mb-3">
+                        <label class="form-label">Phạm vi bài viết (Visibility):</label>
+                        <div class="radio-group" style="display:flex; gap:16px;">
+                            <label class="radio-card">
+                                <input type="radio" name="articleVisibility" value="public" checked>
+                                <span class="radio-custom">🌐 Công khai (Thư viện)</span>
+                            </label>
+                            <label class="radio-card">
+                                <input type="radio" name="articleVisibility" value="onlycourse">
+                                <span class="radio-custom">🔒 Dành riêng Khóa học (Only Course)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Linked Problems Selection -->
+                    <div class="form-group mb-3">
+                        <label class="form-label">🧩 Gán Bài Tập Vận Dụng từ Kho Bài Tập (Linked Problems):</label>
+                        <p style="font-size:0.83rem; color:var(--text-muted); margin-bottom:8px;">Chọn các bài tập trong kho để hiển thị phía dưới phần lý thuyết khi học sinh học bài này:</p>
+                        <input type="text" id="searchProblemForKnowledgeInput" class="form-control mb-2" placeholder="🔍 Tìm kiếm bài tập..." style="font-size:0.88rem; padding:8px 12px; border:1px solid #cbd5e1; border-radius:6px; width:100%;">
+                        <div id="problemsGridForKnowledge" class="template-checkbox-grid" style="max-height: 200px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px;">
+                            <span class="text-muted">⏳ Đang tải danh sách bài tập...</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Cấu hình & Metadata:</label>
+                        <div class="checkbox-grid">
+                            <label><input type="checkbox" id="chkFeatured"> ⭐ Nổi bật</label>
+                            <label><input type="checkbox" id="chkSearchable" checked> 🔍 Cho phép tìm kiếm</label>
+                            <label><input type="checkbox" id="chkAiEnabled" checked> 🤖 Cho phép AI hỗ trợ</label>
+                            <label><input type="checkbox" id="chkHidden"> 👁️ Ẩn bài viết</label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <div class="form-actions">
+                    <button type="button" id="btnPublish" class="btn-primary">🚀 Lưu thông tin</button>
+                    <button type="button" id="btnResetForm" class="btn-text">Làm mới Form</button>
+                </div>
+            </div>
+
+            <!-- CỘT 3: LIVE PREVIEW -->
+            <div class="editor-preview-col nohover card">
+                <div class="preview-header">
+                    <h3>👁️ Xem trước (Live Preview)</h3>
+                </div>
+                <div id="livePreviewContainer" class="preview-body knowledge-detail-render">
+                    <div class="preview-placeholder">Nội dung sẽ được hiển thị realtime tại đây...</div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="footer"></div>
+
+    <script src="js/load-components.js"></script>
+    <script type="module" src="js/knowledge-create.js"></script>
+</body>
+</html>

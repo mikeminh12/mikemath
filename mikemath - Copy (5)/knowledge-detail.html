@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết bài học - MikeMath</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/editor.css">
+
+    <!-- KaTeX for math-formula-node rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" onload="window.katexLoaded = true; document.dispatchEvent(new Event('katexReady'));"></script>
+
+    <!-- MathJax Engine -->
+    <script>
+        window.MathJax = {
+            options: {
+                ignoreHtmlClass: 'math-formula-node|katex|katex-html|katex-mathml'
+            },
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <div id="navbar"></div>
+
+    <!-- AI Recommendation Banner -->
+    <div id="aiBanner" class="ai-banner container hidden">
+        <div class="ai-banner-content">
+            <span>📚 <strong>Gợi ý từ AI:</strong> Bạn cần ôn lại bài học này trước khi tiếp tục giải bài tập!</span>
+            <button id="closeAiBannerBtn" class="btn-close-banner">&times;</button>
+        </div>
+    </div>
+
+    <main class="container knowledge-detail-page">
+
+        <!-- Dynamic Folder Breadcrumb -->
+        <nav class="breadcrumb-nav">
+            <a href="index.html">Trang chủ</a> &gt;
+            <a href="knowledge.html">Kiến thức</a>
+            <span id="breadcrumbFolders"></span> &gt;
+            <span id="breadcrumbTitle" class="active">...</span>
+        </nav>
+
+        <div class="detail-layout">
+
+            <!-- LEFT CONTENT COLUMN (75%) -->
+            <div class="main-content-col">
+
+                <!-- Header Card -->
+                <article class="card nohover article-header-card">
+                    <div class="article-badge-group">
+                        <span id="badgeFeatured" class="badge badge-featured hidden">⭐ Nổi bật</span>
+                        <span id="badgeAi" class="badge badge-ai hidden">🤖 AI Assisted</span>
+                    </div>
+
+                    <h1 id="articleTitle" class="article-title">Đang tải bài viết...</h1>
+                    <p id="articleSummary" class="article-summary"></p>
+
+                    <!-- In-page Search Bar across all Blocks -->
+                    <div class="inpage-search-wrapper">
+                        <input type="search" id="inpageSearchInput" placeholder="🔍 Tìm từ khóa trong các blocks...">
+                    </div>
+                </article>
+
+                <!-- Container chứa toàn bộ Blocks rendered bởi BlockRenderer -->
+                <div id="blocksContainer"></div>
+
+                <!-- Section: Bài tập gợi ý (Dynamic theo Folder) -->
+                <section id="sectionRelatedProblems" class="card nohover article-section">
+                    <h2 class="section-title">🎯 Bài tập gợi ý liên quan</h2>
+                    <div id="relatedProblemsList" class="related-problems-grid">
+                        <p class="text-muted">Đang tìm bài tập thích hợp...</p>
+                    </div>
+                </section>
+
+                <!-- Section: Bài học liên quan (Cùng Folder) -->
+                <section id="sectionRelatedKnowledge" class="card nohover article-section">
+                    <h2 class="section-title">📚 Bài học cùng thư mục</h2>
+                    <div id="relatedKnowledgeList" class="related-knowledge-list">
+                        <p class="text-muted">Đang tải bài viết liên quan...</p>
+                    </div>
+                </section>
+
+                <!-- Bottom Actions -->
+                <div class="article-nav-actions nohover card">
+                    <a href="knowledge.html" class="btn-secondary">&larr; Danh mục kiến thức</a>
+                    <a id="practiceFolderBtn" href="problems.html" class="btn-primary">Luyện tập thư mục này &rarr;</a>
+                </div>
+
+            </div>
+
+            <!-- RIGHT SIDEBAR COLUMN (25%) -->
+            <aside class="sidebar-col">
+
+                <!-- Metadata Card theo Schema Mới -->
+                <div class="card nohover sidebar-card">
+                    <h3 class="sidebar-title">📌 Thông tin bài học</h3>
+                    <ul class="meta-info-list">
+                        <li><strong>📁 Thư mục:</strong> <span id="metaFolder">--</span></li>
+                        <li><strong>📅 Ngày tạo:</strong> <span id="metaCreatedAt">--/--/----</span></li>
+                        <li><strong>🔄 Cập nhật:</strong> <span id="metaUpdatedAt">--/--/----</span></li>
+                        <li><strong>👁️ Lượt xem:</strong> <span id="metaViews">0</span></li>
+                        <li><strong>🧩 Số block:</strong> <span id="metaBlockCount">0</span></li>
+                        <li><strong>⭐ Nổi bật:</strong> <span id="metaFeatured">Không</span></li>
+                        <li><strong>🤖 AI Support:</strong> <span id="metaAiEnabled">Có</span></li>
+                    </ul>
+                </div>
+
+                <!-- Sticky Table of Contents -->
+                <div class="card nohover sidebar-card sticky-card">
+                    <h3 class="sidebar-title">📑 Mục lục bài học</h3>
+                    <nav class="toc-list">
+                        <ul id="tableOfContents"></ul>
+                    </nav>
+
+                    <div class="sidebar-actions">
+                        <button id="shareBtn" class="btn-outline">🔗 Chia sẻ</button>
+                        <button id="saveBtn" class="btn-outline">🔖 <span id="saveBtnText">Lưu bài</span></button>
+                        <button id="printBtn" class="btn-outline">🖨️ In PDF</button>
+                    </div>
+                </div>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+    <!-- Modal Xem Ảnh Block -->
+    <div id="imageModal" class="image-modal hidden">
+        <span id="closeModalBtn" class="modal-close">&times;</span>
+        <div class="modal-content">
+            <img id="modalImg" src="" alt="Zoom Image">
+        </div>
+    </div>
+
+    <div id="footer"></div>
+
+    <script src="js/load-components.js"></script>
+    <script type="module" src="js/knowledge-detail.js"></script>
+
+</body>
+</html>

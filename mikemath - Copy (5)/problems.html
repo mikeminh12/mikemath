@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài tập - MikeMath</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div id="navbar"></div>
+
+    <main class="container problems-page">
+
+        <!-- ================= Header ================= -->
+        <section class="page-header nohover card">
+            <div>
+                <h1>Kho bài tập</h1>
+                <p>Khám phá, luyện tập và chia sẻ các bài toán THCS.</p>
+            </div>
+            <!-- Nhóm các nút thao tác chính -->
+            <div class="header-actions">
+                <button id="mySubmissionsBtn" class="btn-secondary">
+                    📝 Bài nộp của tôi
+                </button>
+                <button id="createProblemBtn" class="btn-primary">
+                    + Đăng bài tập
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= Toolbar ================= -->
+        <section class="card nohover toolbar">
+            <div class="toolbar-left">
+                <input type="search" id="searchInput" placeholder="Tìm kiếm bài tập...">
+
+                <select id="gradeFilter">
+                    <option value="">Tất cả lớp</option>
+                    <option value="6">Lớp 6</option>
+                    <option value="7">Lớp 7</option>
+                    <option value="8">Lớp 8</option>
+                    <option value="9">Lớp 9</option>
+                </select>
+
+                <select id="topicFilter">
+                    <option value="">Tất cả chủ đề</option>
+                    <option value="Đại số">Đại số</option>
+                    <option value="Hình học">Hình học</option>
+                    <option value="Số học">Số học</option>
+                    <option value="Tổ hợp">Tổ hợp</option>
+                </select>
+
+                <select id="difficultyFilter">
+                    <option value="">Độ khó</option>
+                    <option value="easy">Dễ</option>
+                    <option value="medium">Trung bình</option>
+                    <option value="hard">Khó</option>
+                </select>
+            </div>
+
+            <div class="toolbar-right">
+                <button id="listViewBtn" class="view-btn active">📋 Danh sách</button>
+                <button id="postViewBtn" class="view-btn">📰 Bài đăng</button>
+            </div>
+        </section>
+
+        <!-- ================= Result ================= -->
+        <section class="result-info">
+            <span id="resultCount">0 bài tập</span>
+        </section>
+
+        <!-- ================= List View ================= -->
+        <section id="listView" class="problem-list"></section>
+
+        <!-- ================= Post View ================= -->
+        <section id="postView" class="problem-posts hidden"></section>
+
+        <!-- ================= Pagination ================= -->
+        <section class="pagination">
+            <button id="firstPageBtn" title="Trang đầu">⏮</button>
+            <button id="prevPageBtn" title="Trang trước">◀</button>
+            <div id="paginationNumbers"></div>
+            <button id="nextPageBtn" title="Trang sau">▶</button>
+            <button id="lastPageBtn" title="Trang cuối">⏭</button>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <div id="footer"></div>
+
+    <script src="js/load-components.js"></script>
+    <script type="module" src="js/problems.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MikeMath - Dashboard</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <div id="navbar"></div>
+
+    <main class="container">
+
+        <!-- ================= Welcome ================= -->
+
+        <section class="card welcome-card nohover">
+
+            <div>
+
+                <h1>
+                    Xin chào,
+                    <span id="username"></span> 👋
+                </h1>
+
+                <p>
+                    Hôm nay bạn muốn luyện chủ đề nào?
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- ================= Stats ================= -->
+
+        <section class="card nohover grid grid-3">
+
+            <div class="feature card">
+
+                <h3>Điểm AI</h3>
+
+                <div id="score"></div>
+
+            </div>
+
+            <div class="feature card">
+
+                <h3>Level</h3>
+
+                <div id="level"></div>
+
+            </div>
+
+            <div class="feature card">
+
+                <h3>Chuỗi ngày học</h3>
+
+                <div id="streak"></div>
+
+            </div>
+
+        </section>
+
+        <!-- ================= Main ================= -->
+
+        <section class="dashboard-grid">
+
+            <!-- LEFT -->
+
+            <div class="left-panel">
+
+                <!-- Problems -->
+
+                <section class="card nohover">
+
+                    <div class="section-title">
+
+                        <h2>Bài tập mới</h2>
+
+                        <a href="problems.html">
+
+                            Xem tất cả
+
+                        </a>
+
+                    </div>
+
+                    <div id="problemList"></div>
+
+                </section>
+
+            </div>
+
+            <!-- RIGHT -->
+
+            <aside class="right-panel">
+
+                <!-- Leaderboard -->
+
+                <section class="card nohover">
+
+                    <div class="section-title">
+
+                        <h2>
+
+                            🏆 Top 10
+
+                        </h2>
+
+                        <a href="leaderboard.html">
+
+                            Xem thêm
+
+                        </a>
+
+                    </div>
+
+                    <ol id="leaderboard"></ol>
+
+                </section>
+
+                <!-- Knowledge -->
+
+                <section class="card nohover">
+
+                    <div class="section-title">
+
+                        <h2>
+
+                            Kiến thức
+
+                        </h2>
+
+                        <a href="knowledge.html">
+
+                            Tất cả
+
+                        </a>
+
+                    </div>
+
+                    <div id="knowledgeList"></div>
+
+                </section>
+
+            </aside>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+
+    <div id="footer"></div>
+
+    <script src="js/load-components.js"></script>
+
+    <script type="module" src="js/dashboard.js"></script>
+
+</body>
+
+</html>

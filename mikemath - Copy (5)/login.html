@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - MikeMath</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <div id="navbar"></div>
+
+    <main class="auth-page">
+
+        <div class="auth-card">
+
+            <!-- Logo -->
+            <div class="auth-logo">
+
+                <h1>📘 MikeMath</h1>
+
+                <p>
+                    Học Toán THCS cùng AI
+                </p>
+
+            </div>
+
+            <!-- Tabs -->
+            <div class="auth-tabs">
+
+                <button class="tab-btn active" id="loginTab">
+                    Đăng nhập
+                </button>
+
+                <button class="tab-btn" id="registerTab">
+                    Đăng ký
+                </button>
+
+                <!-- Thanh trượt -->
+                <div class="tab-indicator"></div>
+
+            </div>
+
+            <!-- ================= LOGIN ================= -->
+
+            <form id="loginForm" class="auth-form">
+
+                <h2>Chào mừng trở lại 👋</h2>
+
+                <p>
+                    Đăng nhập để tiếp tục học tập.
+                </p>
+
+                <div class="form-group">
+
+                    <label>Email hoặc tên đăng nhập</label>
+
+                    <input
+                        type="text"
+                        id="loginIdentifier"
+                        placeholder="Nhập email hoặc username"
+                        required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Mật khẩu</label>
+
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        placeholder="Nhập mật khẩu"
+                        required>
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="btn-primary">
+
+                    Đăng nhập
+
+                </button>
+
+            </form>
+
+            <!-- ================= REGISTER ================= -->
+
+            <form id="registerForm"
+                  class="auth-form hidden">
+
+                <h2>Tạo tài khoản</h2>
+
+                <p>
+                    Bắt đầu hành trình học Toán cùng AI.
+                </p>
+
+                <div class="form-group">
+
+                    <label>Tên đăng nhập</label>
+
+                    <input
+                        type="text"
+                        id="registerUsername"
+                        placeholder="Ví dụ: mikeminh"
+                        required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Email</label>
+
+                    <input
+                        type="email"
+                        id="registerEmail"
+                        placeholder="example@email.com"
+                        required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Mật khẩu</label>
+
+                    <input
+                        type="password"
+                        id="registerPassword"
+                        placeholder="Tối thiểu 6 ký tự"
+                        required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label>Nhập lại mật khẩu</label>
+
+                    <input
+                        type="password"
+                        id="registerConfirmPassword"
+                        placeholder="Nhập lại mật khẩu"
+                        required>
+
+                </div>
+
+                <button
+                    type="submit"
+                    class="btn-primary">
+
+                    Đăng ký
+
+                </button>
+
+            </form>
+
+            <!-- Loading -->
+
+            <div id="loading" class="hidden">
+
+                Đang xử lý...
+
+            </div>
+
+            <!-- Error -->
+
+            <div id="errorMessage"></div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <div id="footer"></div>
+
+    <script src="js/load-components.js"></script>
+
+    <script type="module" src="js/login.js"></script>
+
+</body>
+
+</html>

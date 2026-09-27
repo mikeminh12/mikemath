@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khóa Học & Lộ Trình Thích Ứng - MikeMath</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/editor.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- KaTeX CSS & JS for Math Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+</head>
+<body>
+
+    <div id="navbar"></div>
+
+    <main class="container knowledge-manager-page" style="max-width: 1350px;">
+        <!-- Top Breadcrumb & Actions -->
+        <section class="result-info flex-between align-center mb-3">
+            <div class="flex-gap align-center">
+                <label for="courseSelect" class="fw-bold text-muted small me-1">Chọn Khóa Học:</label>
+                <select id="courseSelect" class="form-control" style="min-width: 260px; font-weight: 700; border: 2px solid #0f172a; box-shadow: 2px 2px 0 #0f172a;">
+                    <option value="">⏳ Đang tải khóa học...</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- MAIN DASHBOARD LAYOUT -->
+        <div class="courses-dashboard-layout">
+            
+            <!-- LEFT MAIN COLUMN: DUOLINGO ROADMAP PATH -->
+            <div class="roadmap-main-col">
+                <!-- Course Info Header Card -->
+                <div class="course-header-card">
+                    <div class="flex-between align-center mb-2 flex-wrap">
+                        <div>
+                            <span id="courseGradeBadge" class="badge badge-primary me-2">Lớp 8</span>
+                            <span id="courseLevelBadge" class="badge badge-info">Cơ bản - Nâng cao</span>
+                        </div>
+                        <div class="text-muted small fw-bold mt-1">
+                            ⏱️ Thời lượng ước tính: <span id="courseEstTime">120 phút</span>
+                        </div>
+                    </div>
+                    <h1 id="courseTitle" class="article-title mb-1" style="font-size: 1.6rem; color: #0f172a;">Phân Thức Đại Số & Phương Trình</h1>
+                    <p id="courseDesc" class="text-muted small mb-3">Lộ trình thích ứng tự động điều chỉnh nhiệm vụ học và củng cố theo năng lực thực tế của từng học sinh.</p>
+                    
+                    <!-- Progress Bar -->
+                    <div class="flex-between align-center small fw-bold">
+                        <span>📊 Tiến độ học tập: <span id="courseProgressText">0%</span></span>
+                        <span>🏆 Đã làm chủ: <span id="courseMasteredCount">0/6 Bài</span></span>
+                    </div>
+                    <div class="course-progress-bar-wrapper">
+                        <div id="courseProgressBarFill" class="course-progress-bar-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- DUOLINGO ROADMAP PATH CANVAS -->
+                <div class="card nohover" style="background: #f8fafc; border: 2.5px solid #0f172a; border-radius: 16px; box-shadow: 5px 5px 0 #0f172a; overflow: hidden; padding: 20px 10px;">
+                    <div class="text-center mb-3">
+                        <span class="badge badge-warning" style="font-size: 0.85rem; padding: 6px 12px;">
+                            ⚡ Chế độ Adaptive AI: Tự động chèn lộ trình củng cố khi phát hiện điểm yếu
+                        </span>
+                    </div>
+
+                    <div id="roadmapContainer" class="duolingo-roadmap-wrapper">
+                        <p class="text-muted text-center p-4">⏳ Đang dựng lộ trình thích ứng...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT SIDEBAR: STATS & ADAPTIVE PROFILE WIDGETS -->
+            <div class="roadmap-sidebar-col">
+                
+                <!-- STREAK WIDGET -->
+                <div class="sidebar-stat-card text-center" style="background: linear-gradient(135deg, #fff7ed, #ffedd5);">
+                    <div style="font-size: 2.2rem; line-height: 1;">🔥 5</div>
+                    <div class="fw-bold mt-1" style="color: #c2410c; font-size: 0.95rem;">Chuỗi Học Tập (Streak)</div>
+                    <p class="small text-muted mt-1">Học liên tục 5 ngày để duy trì phong độ toán học!</p>
+                </div>
+
+                <!-- ADAPTIVE QUEUE ALERT WIDGET -->
+                <div class="sidebar-stat-card" style="border-color: #ef4444; background: #fef2f2;">
+                    <div class="flex-between align-center mb-2">
+                        <span class="fw-bold" style="color: #dc2626; font-size: 0.9rem;">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Cảnh Báo Củng Cố AI
+                        </span>
+                        <span id="adaptiveTaskBadge" class="badge badge-danger">0 Nhiệm vụ</span>
+                    </div>
+                    <div id="adaptiveQueueContainer">
+                        <p class="small text-muted">🎉 Hiện tại không có điểm yếu cần củng cố khẩn cấp.</p>
+                    </div>
+                </div>
+
+                <!-- USER KNOWLEDGE COMPETENCY PROFILE WIDGET -->
+                <div class="sidebar-stat-card">
+                    <div class="flex-between align-center mb-3">
+                        <span class="fw-bold" style="color: #0f172a; font-size: 0.95rem;">
+                            <i class="fa-solid fa-chart-pie" style="color: #2563eb;"></i> Năng Lực Thành Thạo
+                        </span>
+                        <a href="profile.html" class="small text-primary fw-bold">Chi tiết &gt;</a>
+                    </div>
+                    <div id="knowledgeProfileWidgetList" class="flex-column flex-gap-sm">
+                        <p class="small text-muted">Đang tải thông tin năng lực...</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- LESSON PRACTICE MODAL / DRAWER -->
+    <div id="lessonModal" class="image-modal hidden" style="background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+        <div class="card" style="width: 92%; max-width: 800px; max-height: 90vh; overflow-y: auto; background: #ffffff; border: 3px solid #0f172a; border-radius: 16px; box-shadow: 8px 8px 0 #0f172a; padding: 24px;">
+            <div class="flex-between align-center mb-3 border-bottom pb-2">
+                <div class="flex-gap align-center">
+                    <span id="modalLessonIcon" style="font-size: 1.8rem;">📘</span>
+                    <div>
+                        <h2 id="modalLessonTitle" style="font-size: 1.3rem; margin: 0; color: #0f172a;">Tiêu đề bài học</h2>
+                        <small id="modalLessonSubtitle" class="text-muted">Chương 1 • Phân thức đại số</small>
+                    </div>
+                </div>
+                <button type="button" id="closeLessonModalBtn" class="btn-sm btn-outline" style="font-size: 1.2rem; padding: 2px 10px;">✕</button>
+            </div>
+
+            <!-- MODAL CONTENT TABS: 1. LÝ THUYẾT / 2. LUYỆN TẬP -->
+            <div class="rubric-tab-bar mb-3">
+                <button type="button" id="tabTheoryBtn" class="rubric-tab-btn active">📖 1. Xem Lý Thuyết & Công Thức</button>
+                <button type="button" id="tabPracticeBtn" class="rubric-tab-btn">✍️ 2. Làm Bài Vận Dụng (Threshold 80%)</button>
+            </div>
+
+            <!-- PANEL 1: LÝ THUYẾT -->
+            <div id="panelTheory" class="rubric-panel active">
+                <div id="modalTheoryBody" class="content-rich-text p-3 mb-3" style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; min-height: 140px;">
+                    <p class="text-muted">Đang tải lý thuyết bài học...</p>
+                </div>
+                <div class="text-right">
+                    <button type="button" id="btnGoToPractice" class="btn-primary" style="font-size: 1rem; padding: 10px 20px;">
+                        Chuyển Sang Bài Tập Vận Dụng ➔
+                    </button>
+                </div>
+            </div>
+
+            <!-- PANEL 2: LUYỆN TẬP THÍCH ỨNG -->
+            <div id="panelPractice" class="rubric-panel">
+                <div id="modalPracticeContainer" class="p-2 mb-3">
+                    <p class="text-muted">Đang khởi tạo bài tập thích ứng...</p>
+                </div>
+                <div id="practiceResultBox" class="card hidden mb-3 p-3 text-center" style="background: #e0f2fe; border: 2px solid #0369a1;">
+                    <h3 id="resultTitle" style="color: #0369a1; margin-bottom: 6px;">Ket qua</h3>
+                    <p id="resultMsg" class="small text-muted mb-2">Loi nhan</p>
+                    <button type="button" id="btnContinueCourse" class="btn-primary">Tiếp Tục Học Lộ Trình ➔</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+
+    <script src="js/load-components.js"></script>
+    <script type="module" src="js/learning.js"></script>
+
+</body>
+</html>

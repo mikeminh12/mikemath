@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết bài tập - MikeMath</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/editor.css">
+    <style>
+        /* Lightbox Modal */
+        .image-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+
+        .image-modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .image-modal-content {
+            max-width: 90%;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            transform: scale(0.95);
+            transition: transform 0.25s ease;
+        }
+
+        .image-modal.active .image-modal-content {
+            transform: scale(1);
+        }
+
+        .image-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            color: #fff;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.15);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            transition: background 0.2s;
+            user-select: none;
+        }
+
+        .image-modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Comment Tree Styles */
+        .comment-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid var(--border-color, #e2e8f0);
+            margin-bottom: 12px;
+        }
+
+        .comment-item.reply-item {
+            margin-top: 10px;
+            margin-left: 24px;
+            background: #ffffff;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            color: var(--text-color, #1e293b);
+        }
+
+        .comment-time {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .comment-body {
+            white-space: pre-line;
+            line-height: 1.5;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+
+        .comment-actions-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.85rem;
+        }
+
+        .vote-btn {
+            background: none;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 2px 8px;
+            cursor: pointer;
+            color: #475569;
+            transition: all 0.2s ease;
+        }
+
+        .vote-btn:hover {
+            background: #f1f5f9;
+        }
+
+        .vote-btn.upvoted {
+            background: #dcfce7;
+            color: #15803d;
+            border-color: #86efac;
+        }
+
+        .vote-btn.downvoted {
+            background: #fee2e2;
+            color: #b91c1c;
+            border-color: #fca5a5;
+        }
+
+        .vote-score {
+            font-weight: 600;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .btn-reply-toggle {
+            background: none;
+            border: none;
+            color: #2563eb;
+            cursor: pointer;
+            font-weight: 500;
+            padding: 0;
+        }
+
+        .btn-reply-toggle:hover {
+            text-decoration: underline;
+        }
+
+        .reply-form-container {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #e2e8f0;
+        }
+
+        .btn-liked {
+            background-color: #e0e7ff !important;
+            color: #4338ca !important;
+            border-color: #c7d2fe !important;
+        }
+        /* Bổ sung style cho lồng bình luận vô hạn */
+    .comment-item {
+        padding: 12px 16px;
+        border-radius: 8px;
+        background: #f8fafc;
+        border: 1px solid var(--border-color, #e2e8f0);
+        margin-bottom: 12px;
+    }
+
+    .comment-replies-container {
+        margin-left: 20px;
+        margin-top: 10px;
+        padding-left: 12px;
+        border-left: 2px solid #cbd5e1;
+    }
+
+    .comment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+    }
+
+    .comment-author {
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .comment-time {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    .comment-body {
+        white-space: pre-line;
+        line-height: 1.5;
+        color: #334155;
+        margin-bottom: 8px;
+    }
+
+    .comment-actions-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.85rem;
+    }
+
+    .vote-btn {
+        background: none;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        padding: 2px 8px;
+        cursor: pointer;
+        color: #475569;
+        transition: all 0.2s ease;
+    }
+
+    .vote-btn:hover { background: #f1f5f9; }
+    .vote-btn.upvoted { background: #dcfce7; color: #15803d; border-color: #86efac; }
+    .vote-btn.downvoted { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+
+    .btn-reply-toggle, .btn-toggle-replies {
+        background: none;
+        border: none;
+        color: #2563eb;
+        cursor: pointer;
+        font-weight: 500;
+        padding: 0;
+        font-size: 0.85rem;
+    }
+
+    .btn-reply-toggle:hover, .btn-toggle-replies:hover {
+        text-decoration: underline;
+    }
+
+    .btn-toggle-replies {
+        margin-top: 8px;
+        color: #475569;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .reply-form-container {
+        margin-top: 10px;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <div id="navbar"></div>
+
+    <main class="container problem-detail-page">
+
+        <div class="problem-layout">
+
+            <!-- CỘT TRÁI (3/4) -->
+            <div class="problem-main">
+
+                <!-- 1. Card Thông tin bài -->
+                <section class="card problem-header-card">
+                    <div id="problemBadges" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;"></div>
+                    <h1 id="problemTitle">Đang tải...</h1>
+                    
+                    <div class="problem-meta">
+                        <div>
+                            <span>Tác giả</span>
+                            <strong id="problemAuthor">-</strong>
+                        </div>
+                        <div>
+                            <span>Ngày đăng</span>
+                            <strong id="problemDate">-</strong>
+                        </div>
+                        <div>
+                            <span>Lượt xem</span>
+                            <strong id="problemViews">0</strong>
+                        </div>
+                        <div>
+                            <span>Lượt thích</span>
+                            <strong id="problemLikes">0</strong>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. Card Đề bài -->
+                <section class="card">
+                    <h2>Đề bài</h2>
+                    <div id="problemContent" style="white-space: pre-line; line-height: 1.6; margin-bottom: 16px;"></div>
+                    <div id="problemImages" class="image-gallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 16px;"></div>
+                </section>
+
+                <!-- 3. Card Bình luận -->
+                <section class="card">
+                    <div class="section-header" style="margin-bottom: 16px;">
+                        <h2>Bình luận (<span id="commentCount">0</span>)</h2>
+                    </div>
+
+                    <form id="commentForm">
+                        <textarea
+                            id="commentInput"
+                            rows="3"
+                            placeholder="Viết bình luận của bạn..."
+                            required></textarea>
+                        <button type="submit" id="submitCommentBtn" class="btn-primary" style="margin-top: 8px;">
+                            Gửi bình luận
+                        </button>
+                    </form>
+
+                    <div id="commentList" style="margin-top: 24px;"></div>
+                </section>
+
+            </div>
+
+            <!-- CỘT PHẢI (1/4) -->
+            <aside class="problem-sidebar">
+                <div class="card sticky-sidebar">
+                    <h3>Thao tác</h3>
+
+                    <div class="problem-actions">
+                        <button id="submitSolutionBtn" class="btn-primary btn-block">
+                            📥 Nộp bài giải
+                        </button>
+                        <button id="likeBtn" class="btn-secondary btn-block">
+                            👍 Thích
+                        </button>
+                        <button id="bookmarkBtn" class="btn-secondary btn-block">
+                            ⭐ Lưu bài viết
+                        </button>
+                        <button id="reportBtn" class="btn-secondary btn-block">
+                            🚩 Báo lỗi
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+
+    </main>
+
+    <!-- Modal Lightbox -->
+    <div id="imageModal" class="image-modal">
+        <span id="closeImageModal" class="image-modal-close">&times;</span>
+        <img id="modalImage" class="image-modal-content" src="" alt="Ảnh phóng to">
+    </div>
+
+    <!-- Footer -->
+    <div id="footer"></div>
+
+    <script src="js/load-components.js"></script>
+    <script type="module" src="js/problem-detail.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết bài làm - MikeMath</title>
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- MathJax rendering for LaTeX equations -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        .detail-page {
+            padding-top: 24px;
+            padding-bottom: 40px;
+        }
+
+        .detail-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 992px) {
+            .detail-layout {
+                grid-template-columns: 3fr 1fr;
+            }
+        }
+
+        .hidden { display: none !important; }
+
+        /* Skeleton Loading Utilities */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 4px;
+        }
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .skeleton-text { height: 1rem; margin-bottom: 8px; width: 100%; }
+        .skeleton-title { height: 1.8rem; width: 60%; margin-bottom: 12px; }
+
+        /* Problem Info Meta Grid */
+        .problem-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Image Gallery */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .gallery-item {
+            aspect-ratio: 4/3;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #cbd5e1;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .gallery-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Score Progress Bar */
+        .score-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 16px 0;
+        }
+        .score-number {
+            font-size: 2.25rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+        .progress-bar-bg {
+            flex: 1;
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.8s ease-in-out, background-color 0.3s;
+        }
+
+        /* Color classes for dynamic scores */
+        .score-green { color: #16a34a; }
+        .bg-green { background-color: #16a34a; }
+        .score-yellow { color: #d97706; }
+        .bg-yellow { background-color: #d97706; }
+        .score-red { color: #dc2626; }
+        .bg-red { background-color: #dc2626; }
+
+        /* AI Feedback Sections */
+        .ai-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px dashed #e2e8f0;
+        }
+        .ai-section-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .feedback-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        .feedback-list li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+        .feedback-list.strengths li::before {
+            content: "✔";
+            position: absolute;
+            left: 0;
+            color: #16a34a;
+            font-weight: bold;
+        }
+        .feedback-list.mistakes li::before {
+            content: "❌";
+            position: absolute;
+            left: 0;
+            font-size: 0.8rem;
+        }
+
+        /* Badges */
+        .badge-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .badge {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Fullscreen Image Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-img {
+            max-width: 90vw;
+            max-height: 90vh;
+            border-radius: 6px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 32px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .readonly-textarea {
+            width: 100%;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: #334155;
+            resize: vertical;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Dynamic Navbar -->
+    <div id="navbar"></div>
+
+    <main class="container detail-page">
+
+        <!-- Skeleton Screen (Hiển thị trong khi tải Firestore) -->
+        <div id="skeletonState" class="detail-layout">
+            <div>
+                <div class="card mb-4" style="margin-bottom: 24px;">
+                    <div class="skeleton skeleton-title"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                </div>
+                <div class="card">
+                    <div class="skeleton skeleton-title" style="width: 40%;"></div>
+                    <div class="skeleton skeleton-text" style="height: 120px;"></div>
+                </div>
+            </div>
+            <div>
+                <div class="card">
+                    <div class="skeleton skeleton-title"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Layout -->
+        <div id="mainLayout" class="detail-layout hidden">
+
+            <!-- CỘT TRÁI: Đề bài + Bài làm học sinh -->
+            <div class="detail-left">
+
+                <!-- Card 1: Thông tin bài toán -->
+                <section class="card nohover" style="margin-bottom: 24px;">
+                    <span style="font-size: 0.8rem; color: #64748b; font-weight: 600; text-transform: uppercase;">Bài toán</span>
+                    <h2 id="problemTitle" style="color: #1e293b; margin-top: 4px; margin-bottom: 12px;">--</h2>
+
+                    <div id="problemContent" class="problem-body" style="font-size: 0.95rem; line-height: 1.6; color: #334155;"></div>
+
+                    <div id="problemImages" class="image-gallery" style="margin-top: 12px;"></div>
+
+                    <div class="problem-meta-grid">
+                        <div><strong>Tác giả:</strong> <span id="problemAuthor">--</span></div>
+                        <div><strong>Khối:</strong> <span id="problemGrade">--</span></div>
+                        <div><strong>Chủ đề:</strong> <span id="problemTopic">--</span></div>
+                        <div><strong>Độ khó:</strong> <span id="problemDifficulty">--</span></div>
+                    </div>
+                </section>
+
+                <!-- Card 2: Bài làm của học sinh -->
+                <section class="card nohover">
+                    <h3 style="margin-bottom: 16px; font-size: 1.1rem; color: #1e293b;">✍️ Bài làm của học sinh</h3>
+
+                    <!-- View cho Image Submission -->
+                    <div id="submissionImageContainer" class="hidden">
+                        <div id="submissionGallery" class="image-gallery"></div>
+                    </div>
+
+                    <!-- View cho Text/LaTeX Submission -->
+                    <div id="submissionTextContainer" class="hidden">
+                        <textarea id="submissionText" class="readonly-textarea" rows="8" readonly></textarea>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- CỘT PHẢI: AI Chấm điểm & Sidebar -->
+            <div class="detail-right">
+
+                <!-- Card AI: Đánh giá chi tiết -->
+                <section class="card nohover mb-4" style="margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h3 style="font-size: 1.1rem; color: #1e293b; margin: 0;">🤖 AI Đã Chấm</h3>
+                            <div id="detectedMethod" style="margin-top: 4px;"></div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span id="aiConfidence" style="font-size: 0.75rem; background: #f1f5f9; padding: 2px 8px; border-radius: 12px; color: #64748b;">Độ tin cậy: --%</span>
+                            <div id="confidenceReason" style="font-size: 0.72rem; color: #94a3b8; margin-top: 2px; max-width: 180px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Điểm số & Progress Bar -->
+                    <div class="score-container">
+                        <div id="scoreDisplay" class="score-number">0.0</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 4px;">Thang điểm 10</div>
+                            <div class="progress-bar-bg">
+                                <div id="scoreBar" class="progress-bar-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- General Feedback -->
+                    <p id="aiFeedback" style="font-size: 0.9rem; color: #475569; line-height: 1.5; margin-bottom: 12px;"></p>
+
+                    <!-- Bảng Tiêu Chí Rubric -->
+                    <div id="criteriaSection" class="ai-section hidden">
+                        <div class="ai-section-title">📊 Chi tiết tiêu chí Rubric</div>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 8px;">
+                                <thead>
+                                    <tr style="background: #f1f5f9; text-align: left; color: #475569;">
+                                        <th style="padding: 8px; border-radius: 4px 0 0 4px;">Tiêu chí</th>
+                                        <th style="padding: 8px; text-align: center;">Điểm đạt</th>
+                                        <th style="padding: 8px; text-align: center;">Tối đa</th>
+                                        <th style="padding: 8px; border-radius: 0 4px 4px 0;">Nhận xét AI</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="criteriaTbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Điểm mạnh -->
+                    <div id="sectionStrengths" class="ai-section hidden">
+                        <div class="ai-section-title" style="color: #16a34a;">💪 Điểm mạnh</div>
+                        <ul id="listStrengths" class="feedback-list strengths"></ul>
+                    </div>
+
+                    <!-- Lỗi sai -->
+                    <div id="sectionMistakes" class="ai-section hidden">
+                        <div class="ai-section-title" style="color: #dc2626;">⚠️ Lỗi cần khắc phục</div>
+                        <div id="listMistakesContainer">
+                            <ul id="listMistakes" class="feedback-list mistakes"></ul>
+                        </div>
+                    </div>
+
+                    <!-- Kiến thức cần học -->
+                    <div id="sectionKnowledge" class="ai-section hidden">
+                        <div class="ai-section-title">📚 Kiến thức liên quan</div>
+                        <div id="badgeKnowledge" class="badge-list"></div>
+                    </div>
+
+                    <!-- Gợi ý cải thiện -->
+                    <div id="sectionSuggestion" class="ai-section hidden">
+                        <div class="ai-section-title">💡 Lời khuyên</div>
+                        <p id="aiSuggestion" style="font-size: 0.875rem; color: #475569; margin: 0;"></p>
+                    </div>
+
+                    <!-- Đáp án chuẩn -->
+                    <div id="sectionCorrectAnswer" class="ai-section hidden">
+                        <div class="ai-section-title">🔑 Đáp án tham khảo</div>
+                        <textarea id="aiCorrectAnswer" class="readonly-textarea" rows="4" readonly style="font-size: 0.85rem;"></textarea>
+                    </div>
+                </section>
+
+                <!-- CARD PHÚC KHẢO / KHÁNG CÁO GIẢI PHÁP VỚI GIAO DIỆN CHUẨN -->
+                <section id="appealFormCard" class="card mb-4 hidden" style="margin-bottom: 24px; border: 2.5px solid #c2410c; background: #fff7ed; padding: 20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;" class="mb-2">
+                        <h3 style="font-size: 1.05rem; color: #c2410c; margin: 0; font-weight: 900;">
+                            ⚖️ Yêu Cầu Phúc Khảo Kết Quả AI
+                        </h3>
+                        <button type="button" id="btnCloseAppealCard" style="background:none; border:none; color:#9a3412; font-size:1.2rem; cursor:pointer; font-weight:bold;">✕</button>
+                    </div>
+                    
+                    <p style="font-size: 0.85rem; color: #9a3412; margin: 0 0 12px 0; font-weight: 600;">
+                        Nếu bạn cho rằng AI đã chấm chưa chính xác hoặc lời giải sử dụng phương pháp khác hợp lệ, hãy nhập lý do để Giáo viên AI đọc lại toàn bộ bài giải:
+                    </p>
+
+                    <!-- Quick Reason Chips -->
+                    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
+                        <button type="button" class="btn-chip-reason" data-reason="Em dùng phương pháp khác nhưng kết quả toán học hoàn toàn đúng." style="background:#ffedd5; border:1px solid #fdba74; color:#9a3412; font-size:0.78rem; border-radius:14px; padding:4px 10px; cursor:pointer; font-weight:700;">💡 Phương pháp khác đúng</button>
+                        <button type="button" class="btn-chip-reason" data-reason="Bước tính toán và đáp số cuối cùng của em đúng, AI đã chấm nhầm." style="background:#ffedd5; border:1px solid #fdba74; color:#9a3412; font-size:0.78rem; border-radius:14px; padding:4px 10px; cursor:pointer; font-weight:700;">⚠️ AI chấm nhầm đáp số</button>
+                        <button type="button" class="btn-chip-reason" data-reason="Hình vẽ / sơ đồ tỷ lệ của em đúng tương đương với phương trình." style="background:#ffedd5; border:1px solid #fdba74; color:#9a3412; font-size:0.78rem; border-radius:14px; padding:4px 10px; cursor:pointer; font-weight:700;">📐 Sơ đồ / hình vẽ đúng</button>
+                    </div>
+
+                    <textarea id="appealReasonText" class="form-control mb-3" rows="3" placeholder="Nhập chi tiết lý do thắc mắc hoặc chọn gợi ý bên trên..." style="border: 2px solid #ea580c; font-weight: 600; background: #fff; width: 100%; border-radius: 6px; padding: 10px; box-sizing: border-box;"></textarea>
+
+                    <div style="display:flex; gap:10px; justify-content:flex-end;">
+                        <button type="button" id="btnCancelAppealCard" class="btn-secondary" style="padding: 6px 14px; font-size: 0.85rem;">Hủy</button>
+                        <button type="button" id="btnSubmitAppealForm" class="btn-primary" style="padding: 6px 18px; font-size: 0.85rem; background: #c2410c; border-color: #9a3412;">
+                            🚀 Gửi AI Kháng Cáo
+                        </button>
+                    </div>
+
+                    <div id="appealFeedbackResult" class="mt-3 hidden" style="padding: 12px; border-radius: 8px; font-size: 0.88rem; font-weight: 700;"></div>
+                </section>
+
+                <!-- Sidebar Navigation Card -->
+                <section class="card" style="position: sticky; top: 20px;">
+                    <h4 style="margin-bottom: 12px; font-size: 0.95rem; color: #1e293b;">📌 Thông tin lần nộp</h4>
+                    
+                    <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 16px; line-height: 1.8;">
+                        <div>• Ngày nộp: <strong id="subCreatedAt" style="color: #334155;">--</strong></div>
+                        <div>• Định dạng: <strong id="subType" style="color: #334155;">--</strong></div>
+                        <div>• Trạng thái: <span id="subStatus" class="badge" style="background: #dcfce7; color: #15803d; border: none;">Hoàn tất</span></div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <button id="btnRetry" class="btn-primary" style="width: 100%;">🔄 Làm lại bài này</button>
+                        <button id="btnAppeal" class="btn-secondary" style="width: 100%; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa;">⚖️ Yêu cầu chấm lại / Phúc khảo</button>
+                        <button id="btnViewProblem" class="btn-secondary" style="width: 100%;">📄 Xem chi tiết đề bài</button>
+                        <button id="btnProblemList" class="btn-secondary" style="width: 100%; border: none; background: transparent;">← Danh sách bài tập</button>
+                    </div>
+                </section>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Modal Xem Ảnh Fullscreen -->
+    <div id="imageModal" class="modal-overlay">
+        <span id="modalCloseBtn" class="modal-close">&times;</span>
+        <img id="modalImage" class="modal-img" src="" alt="Hình ảnh phóng to">
+    </div>
+
+    <!-- Dynamic Footer -->
+    <div id="footer"></div>
+
+    <script src="js/load-components.js"></script>
+    <script type="module" src="js/submit-detail.js"></script>
+
+</body>
+
+</html>

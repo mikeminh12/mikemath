@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thư viện kiến thức - MikeMath</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div id="navbar"></div>
+
+    <main class="container knowledge-page">
+
+        <!-- ================= Header ================= -->
+        <section class="page-header nohover card">
+            <div>
+                <h1 id="folderTitle">Thư viện kiến thức</h1>
+                <p id="folderDesc">Duyệt, tra cứu và tổng hợp kiến thức môn Toán THCS theo cây thư mục.</p>
+            </div>
+<button id="createArticleBtn" class="btn-primary" style="display: none;">
+        + Thêm bài học
+    </button>
+        </section>
+
+        <!-- ================= Toolbar ================= -->
+        <section class="card nohover toolbar">
+            <div class="toolbar-left">
+                <!-- Search Box -->
+                <input type="search" id="searchArticleInput" placeholder="🔍 Tìm nhanh bài học / thư mục...">
+
+                <!-- Class / Grade Filter -->
+                <select id="gradeFilter">
+                    <option value="">Tất cả khối lớp</option>
+                    <option value="6">Lớp 6</option>
+                    <option value="7">Lớp 7</option>
+                    <option value="8">Lớp 8</option>
+                    <option value="9">Lớp 9</option>
+                </select>
+
+                <!-- Subject / Topic Filter -->
+                <select id="topicFilter">
+                    <option value="">Tất cả phân môn</option>
+                    <option value="Đại số">Đại số</option>
+                    <option value="Hình học">Hình học</option>
+                    <option value="Số học">Số học</option>
+                    <option value="Xác suất thống kê">Xác suất thống kê</option>
+                </select>
+            </div>
+
+            <div class="toolbar-right">
+                <button id="gridViewBtn" class="view-btn active">🗂 Grid Explorer</button>
+                <button id="listViewBtn" class="view-btn">📋 Danh sách</button>
+            </div>
+        </section>
+
+        <!-- ================= Dynamic Breadcrumb & Result Info ================= -->
+        <section class="result-info flex-between">
+            <nav id="breadcrumbList" class="breadcrumb-links">
+                <!-- Render động: 🏠 Root > Hình học > Tam giác -->
+            </nav>
+            <span id="resultCount">0 mục</span>
+        </section>
+
+        <!-- ================= Grid / Tree Explorer View ================= -->
+        <section id="gridView" class="explorer-section">
+            <div id="knowledgeGrid" class="knowledge-grid">
+                <!-- Render chung cả thư mục và bài học dưới dạng Card/Grid -->
+            </div>
+        </section>
+
+        <!-- ================= List View (Hidden by default) ================= -->
+        <section id="listView" class="knowledge-list hidden"></section>
+
+        <!-- ================= Pagination ================= -->
+        <section class="pagination">
+            <button id="firstPageBtn" title="Trang đầu">⏮</button>
+            <button id="prevPageBtn" title="Trang trước">◀</button>
+            <div id="paginationNumbers"></div>
+            <button id="nextPageBtn" title="Trang sau">▶</button>
+            <button id="lastPageBtn" title="Trang cuối">⏭</button>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <div id="footer"></div>
+
+    <script src="js/load-components.js"></script>
+    <script type="module" src="js/knowledge.js"></script>
+
+</body>
+</html>

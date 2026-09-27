@@ -1,0 +1,64 @@
+<header>
+    <nav>
+
+
+    <div class="navbar">
+
+        <a id="navLogo" class="logo">
+
+            <span class="logo-icon">📘</span>
+
+            <span>MikeMath</span>
+
+        </a>
+
+        <div class="nav-links">
+            <a href="courses.html">Khóa học 🗺️</a>
+
+            <a href="problems.html">Bài tập</a>
+
+            <a href="knowledge.html">Kiến thức</a>
+
+            <a href="leaderboard.html">BXH</a>
+            <a href="submitted.html">Bài nộp</a>
+        </div>
+            
+
+
+        <!-- Chưa đăng nhập -->
+        <div id="guestActions">
+
+            <a href="login.html" class="btn-outline">
+                Đăng nhập
+            </a>
+
+            <a href="login.html" class="btn-primary">
+                Đăng ký
+            </a>
+
+        </div>
+
+ <!-- Đã đăng nhập -->
+<div id="userActions" class="nav-user">
+
+    <button id="userMenuButton" class="user-button">
+        <img id="navAvatar" src="assets/images/non.png" alt="Avatar">
+        <span id="navUsername">Mike</span>
+        <span class="arrow">▼</span>
+    </button>
+
+    <!-- ĐÃ XÓA CLASS .hidden Ở ĐÂY -->
+    <div id="userDropdown" class="user-dropdown">
+        <a href="profile.html">👤 Trang cá nhân</a>
+        
+        <!-- Các element ẩn nội bộ vẫn có thể dùng class .hidden bình thường -->
+        <a id="adminMenu" href="admin.html" class="hidden">⚙️ Quản trị</a>
+        
+        <button id="logoutBtn">🚪 Đăng xuất</button>
+    </div>
+
+</div>
+
+    </div>
+    </nav>
+</header>

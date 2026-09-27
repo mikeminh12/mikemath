@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chụp ảnh bài làm - MikeMath</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { background: #111827; color: white; margin: 0; padding: 16px; text-align: center; font-family: system-ui, -apple-system, sans-serif; }
+        .camera-box { position: relative; width: 100%; max-width: 480px; margin: 0 auto; background: #000; border-radius: 12px; overflow: hidden; }
+        video { width: 100%; height: auto; display: block; }
+        .controls { margin-top: 16px; display: flex; gap: 12px; justify-content: center; }
+        .btn-capture { width: 64px; height: 64px; border-radius: 50%; border: 4px solid #fff; background: #ef4444; cursor: pointer; }
+        .btn-submit { background: #2563eb; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        /* Preview Grid List */
+        .preview-list { display: flex; gap: 12px; overflow-x: auto; padding: 12px 0; justify-content: flex-start; }
+        .preview-item { position: relative; flex-shrink: 0; width: 72px; height: 72px; }
+        .preview-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 2px solid #3b82f6; cursor: pointer; }
+        .btn-remove { position: absolute; top: -6px; right: -6px; background: #ef4444; color: white; border: 2px solid #111827; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; cursor: pointer; }
+        
+        /* Modal Fullscreen Preview */
+        .modal { display: flex; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; flex-direction: column; }
+        .modal img { max-width: 90%; max-height: 80vh; border-radius: 8px; object-fit: contain; }
+        .modal-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 32px; font-weight: bold; cursor: pointer; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <h2>📷 Chụp ảnh bài làm</h2>
+    <p style="font-size: 0.85rem; color: #9ca3af;">Chụp ảnh rõ nét, chạm vào ảnh để xem hoặc xóa</p>
+
+    <div class="camera-box">
+        <video id="video" autoplay playsinline></video>
+        <canvas id="canvas" class="hidden"></canvas>
+    </div>
+
+    <div class="controls">
+        <button id="btnCapture" class="btn-capture" title="Chụp ảnh"></button>
+    </div>
+
+    <div class="preview-list" id="capturedList"></div>
+
+    <div style="margin-top: 16px;">
+        <button id="btnUpload" class="btn-submit hidden">🚀 Tải ảnh lên máy tính (<span id="count">0</span>)</button>
+    </div>
+
+    <!-- Modal Xem Ảnh Phóng To -->
+    <div id="imageModal" class="modal hidden">
+        <span class="modal-close" id="closeModal">&times;</span>
+        <img id="modalImg" src="" alt="Full Preview">
+    </div>
+
+<script type="module">
+    import { db } from "./js/firebase.js";
+    import {
+        doc,
+        updateDoc,
+        arrayUnion
+    } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+    import { uploadImages } from "./js/cloudinary.js";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get("session");
+
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const btnCapture = document.getElementById("btnCapture");
+    const btnUpload = document.getElementById("btnUpload");
+    const capturedList = document.getElementById("capturedList");
+    const countEl = document.getElementById("count");
+
+    // Elements Modal Preview
+    const imageModal = document.getElementById("imageModal");
+    const modalImg = document.getElementById("modalImg");
+    const closeModal = document.getElementById("closeModal");
+
+    let cameraStream = null;
+    let capturedBlobs = []; // Lưu trữ dạng Object: { id, blob, previewUrl }
+
+    // =========================
+    // MỞ CAMERA
+    // =========================
+    async function initCamera() {
+        try {
+            if (!navigator.mediaDevices?.getUserMedia) {
+                throw new Error("Trình duyệt không hỗ trợ camera hoặc trang chưa chạy HTTPS.");
+            }
+
+            cameraStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: { ideal: "environment" } },
+                audio: false
+            });
+
+            video.srcObject = cameraStream;
+            await video.play();
+            console.log("Camera đã mở.");
+
+        } catch (err) {
+            console.error("Lỗi camera:", err);
+            if (err.name === "NotAllowedError") {
+                alert("Bạn chưa cấp quyền camera cho trang này!");
+            } else if (err.name === "NotFoundError") {
+                alert("Không tìm thấy camera!");
+            } else if (err.name === "NotReadableError") {
+                alert("Camera đang được ứng dụng khác sử dụng!");
+            } else {
+                alert("Không thể mở camera: " + err.message);
+            }
+        }
+    }
+
+    // =========================
+    // CHỤP ẢNH
+    // =========================
+    btnCapture.addEventListener("click", () => {
+        if (!video.videoWidth || !video.videoHeight) {
+            alert("Camera chưa sẵn sàng, hãy đợi một chút!");
+            return;
+        }
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext("2d");
+
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob((blob) => {
+            if (!blob) {
+                alert("Không thể tạo ảnh!");
+                return;
+            }
+
+            const imageItem = {
+                id: Date.now() + Math.random().toString(36).substring(2, 5),
+                blob: blob,
+                previewUrl: URL.createObjectURL(blob)
+            };
+
+            capturedBlobs.push(imageItem);
+            renderPreviews();
+
+        }, "image/jpeg", 0.9);
+    });
+
+    // =========================
+    // RENDER PREVIEW & XÓA ÁNH
+    // =========================
+    function renderPreviews() {
+        capturedList.innerHTML = "";
+
+        capturedBlobs.forEach((item, index) => {
+            const container = document.createElement("div");
+            container.className = "preview-item";
+
+            // Ảnh thumbnail
+            const img = document.createElement("img");
+            img.src = item.previewUrl;
+            img.alt = `Ảnh ${index + 1}`;
+            img.addEventListener("click", () => openPreviewModal(item.previewUrl));
+
+            // Nút bấm X xóa ảnh
+            const removeBtn = document.createElement("button");
+            removeBtn.className = "btn-remove";
+            removeBtn.innerHTML = "&times;";
+            removeBtn.title = "Bỏ chọn ảnh";
+            removeBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                removeImage(item.id);
+            });
+
+            container.appendChild(img);
+            container.appendChild(removeBtn);
+            capturedList.appendChild(container);
+        });
+
+        // Cập nhật giao diện đếm & nút upload
+        countEl.textContent = capturedBlobs.length;
+        if (capturedBlobs.length > 0) {
+            btnUpload.classList.remove("hidden");
+        } else {
+            btnUpload.classList.add("hidden");
+        }
+    }
+
+    function removeImage(id) {
+        const index = capturedBlobs.findIndex(item => item.id === id);
+        if (index !== -1) {
+            URL.revokeObjectURL(capturedBlobs[index].previewUrl); // Giải phóng bộ nhớ
+            capturedBlobs.splice(index, 1);
+            renderPreviews();
+        }
+    }
+
+    // =========================
+    // MODAL FULLSCREEN PREVIEW
+    // =========================
+    function openPreviewModal(url) {
+        modalImg.src = url;
+        imageModal.classList.remove("hidden");
+    }
+
+    closeModal.addEventListener("click", () => imageModal.classList.add("hidden"));
+    imageModal.addEventListener("click", (e) => {
+        if (e.target === imageModal) imageModal.classList.add("hidden");
+    });
+
+    // =========================
+    // UPLOAD ẢNH
+    // =========================
+    btnUpload.addEventListener("click", async () => {
+        if (capturedBlobs.length === 0) {
+            alert("Chưa có ảnh nào!");
+            return;
+        }
+
+        if (!sessionId) {
+            alert("Không tìm thấy session QR!");
+            return;
+        }
+
+        btnUpload.disabled = true;
+        btnUpload.textContent = "Đang tải ảnh lên...";
+
+        try {
+            // Chuyển danh sách Blob thành mảng File
+            const files = capturedBlobs.map((item, index) => {
+                return new File(
+                    [item.blob],
+                    `capture_${index + 1}.jpg`,
+                    { type: "image/jpeg" }
+                );
+            });
+
+            // Upload Cloudinary
+            const uploadResults = await uploadImages(files);
+
+            // Cập nhật mảng URL vào Firestore document qr_sessions
+            const sessionRef = doc(db, "qr_sessions", sessionId);
+            await updateDoc(sessionRef, {
+                images: arrayUnion(
+                    ...uploadResults.map(res => ({
+                        url: res.secure_url || res.url
+                    }))
+                )
+            });
+
+            alert("Đã gửi ảnh lên máy tính thành công!");
+
+            // Tắt stream Camera
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+            }
+
+            window.close();
+
+        } catch (error) {
+            console.error(error);
+            alert("Có lỗi xảy ra: " + error.message);
+
+            btnUpload.disabled = false;
+            btnUpload.textContent = `🚀 Tải ảnh lên máy tính (${capturedBlobs.length})`;
+        }
+    });
+
+    // =========================
+    // KHỞI ĐỘNG
+    // =========================
+    initCamera();
+
+</script>
+</body>
+</html>

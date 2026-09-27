@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng bài tập - MikeMath</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./css/editor.css">
+    <style>
+        .rubric-card-section {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+        .rubric-tab-bar {
+            display: flex;
+            background: #e2e8f0;
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 20px;
+            gap: 6px;
+        }
+        .rubric-tab-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+        .rubric-tab-btn.active {
+            background: #ffffff;
+            color: #2563eb;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+        .rubric-panel { display: none; }
+        .rubric-panel.active { display: block; }
+        .warn-score {
+            font-size: 0.82rem;
+            color: #d97706;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+        .solutions-extra-item {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        .solutions-extra-item textarea {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            resize: vertical;
+            min-height: 70px;
+            font-family: inherit;
+        }
+        .btn-remove-sol {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #ef4444;
+            border-radius: 6px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            margin-top: 4px;
+        }
+        .template-checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 8px;
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+        }
+        .template-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.88rem;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+        }
+        .template-item:hover { background: #f1f5f9; }
+        .rubric-item-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+        .rubric-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <div id="navbar"></div>
+
+    <!-- Main Wrapper -->
+    <main class="main-wrapper">
+        <div class="container">
+            <div class="problem-create-layout" style="display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap;">
+
+                <!-- SIDEBAR: Danh sách bài tập của bạn -->
+                <aside class="my-problems-sidebar" style="flex: 0 0 320px; width: 100%; max-width: 340px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9;">
+                        <h3 style="margin: 0; font-size: 1rem; color: #0f172a; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-folder-open" style="color: #2563eb;"></i> Bài tập đã đăng
+                        </h3>
+                        <button type="button" id="btnSidebarNewProblem" class="btn-primary" style="padding: 5px 10px; font-size: 0.8rem; border-radius: 6px;">
+                            <i class="fa-solid fa-plus"></i> Tạo mới
+                        </button>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <input type="text" id="searchMyProblemsInput" placeholder="🔍 Tìm bài tập..." style="width: 100%; padding: 8px 12px; font-size: 0.85rem; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box;">
+                    </div>
+                    <div id="myProblemsListContainer" style="max-height: 650px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;">
+                        <span style="font-size: 0.85rem; color: #64748b;">⏳ Đang tải bài tập...</span>
+                    </div>
+                </aside>
+
+                <!-- MAIN FORM CARD -->
+                <div class="card create-problem-card nohover" style="flex: 1; min-width: 320px;">
+
+                    <div class="page-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                            <h1 id="pageTitle" style="margin:0;">Đăng bài tập mới</h1>
+                            <span id="editingStatusBadge" style="display:none; font-size: 0.85rem; padding: 4px 10px; background: #e0f2fe; color: #0284c7; border-radius: 20px; font-weight: 600;">
+                                <i class="fa-solid fa-pen-to-square"></i> Đang sửa bài tập
+                            </span>
+                        </div>
+                        <button type="button" id="btnHeaderNewProblem" class="btn-secondary" style="display:none; font-size: 0.85rem; padding: 6px 14px; border-radius: 6px;">
+                            <i class="fa-solid fa-plus"></i> Chuyển sang Tạo bài mới
+                        </button>
+                    </div>
+
+                    <form id="problemForm">
+
+                        <!-- Tiêu đề -->
+                        <div class="form-group">
+                            <label for="title">Tiêu đề bài tập *</label>
+                            <input type="text" id="title" placeholder="Nhập tiêu đề bài toán..." required>
+                        </div>
+
+                        <!-- Phân loại: Lớp, Độ khó, Chủ đề -->
+                        <div class="form-row" style="display: flex; gap: 16px; flex-wrap: wrap;">
+                            <div class="form-group" style="flex: 1; min-width: 180px;">
+                                <label for="grade">Phân loại Lớp *</label>
+                                <select id="grade" required>
+                                    <option value="">-- Chọn lớp --</option>
+                                    <option value="6">Lớp 6</option>
+                                    <option value="7">Lớp 7</option>
+                                    <option value="8">Lớp 8</option>
+                                    <option value="9">Lớp 9</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="flex: 1; min-width: 180px;">
+                                <label for="difficulty">Độ khó *</label>
+                                <select id="difficulty" required>
+                                    <option value="">-- Chọn độ khó --</option>
+                                    <option value="easy">Dễ</option>
+                                    <option value="medium">Trung bình</option>
+                                    <option value="hard">Khó</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="flex: 1; min-width: 180px;">
+                                <label for="topicSelect">Chủ đề *</label>
+                                <select id="topicSelect" required>
+                                    <option value="">⏳ Đang tải chủ đề...</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="flex: 1; min-width: 180px;">
+                                <label for="visibilitySelect">Phạm vi hiển thị *</label>
+                                <select id="visibilitySelect" required>
+                                    <option value="public" selected>🌐 Công khai (Thư viện bài tập)</option>
+                                    <option value="onlycourse">🔒 Dành riêng cho Khóa học (Only Course)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Ô nhập chủ đề mới -->
+                        <div class="form-group hidden" id="customTopicContainer">
+                            <label for="customTopic">Nhập tên chủ đề mới *</label>
+                            <input type="text" id="customTopic" placeholder="Ví dụ: Bất đẳng thức, Xác suất...">
+                        </div>
+
+                        <!-- Kiến thức liên quan (Thư viện bài học) -->
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label style="font-weight: 600; font-size: 0.95rem; color: #1e293b;">
+                                <i class="fa-solid fa-book-bookmark" style="color: #4f46e5;"></i> Chọn các bài viết Kiến Thức Liên Quan (Không bắt buộc)
+                            </label>
+                            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 8px;">
+                                Liên kết bài học lý thuyết từ Thư viện giúp học sinh tham khảo khi làm bài tập này:
+                            </p>
+                            <input type="text" id="searchKnowledgeInput" class="form-control" placeholder="🔍 Tìm kiếm bài viết kiến thức theo tên..." style="margin-bottom: 8px; font-size: 0.88rem; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; width: 100%;">
+                            <div class="template-checkbox-grid" id="knowledgeArticlesGrid" style="max-height: 200px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+                                <span style="font-size:0.85rem; color:#94a3b8;">⏳ Đang tải thư viện kiến thức...</span>
+                            </div>
+                        </div>
+
+                        <!-- Nội dung bài tập -->
+                        <div class="problem-editor-container">
+                            <label for="content">Nội dung đề bài *</label>
+                            <div id="problem-editor-container"></div>
+                        </div>
+
+                        <!-- Upload ảnh đề bài -->
+                        <div class="form-group">
+                            <label for="problemImageInput">Ảnh đính kèm đề bài (Chọn nhiều ảnh)</label>
+                            <div id="existingProblemImageContainer" style="margin-bottom: 10px; display: none;">
+                                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Ảnh đề bài hiện có:</label>
+                                <div id="existingProblemImagePreview" class="image-preview-grid"></div>
+                            </div>
+                            <input type="file" id="problemImageInput" multiple accept="image/*">
+                            <div id="problemImagePreview" class="image-preview-grid"></div>
+                        </div>
+
+                        <hr style="margin: 24px 0; border: none; border-top: 1px dashed var(--border-color, #ccc);">
+
+                        <!-- Hướng dẫn / Lời giải -->
+                        <div class="problem-editor-container">
+                            <label for="solution">Hướng dẫn giải / Lời giải mẫu (Không bắt buộc)</label>
+                            <div id="solution-editor-container"></div>
+                        </div>
+
+                        <!-- Upload ảnh lời giải -->
+                        <div class="form-group">
+                            <label for="solutionImageInput">Ảnh đính kèm lời giải (Chọn nhiều ảnh)</label>
+                            <div id="existingSolutionImageContainer" style="margin-bottom: 10px; display: none;">
+                                <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Ảnh lời giải hiện có:</label>
+                                <div id="existingSolutionImagePreview" class="image-preview-grid"></div>
+                            </div>
+                            <input type="file" id="solutionImageInput" multiple accept="image/*">
+                            <div id="solutionImagePreview" class="image-preview-grid"></div>
+                        </div>
+
+                        <!-- ========================================== -->
+                        <!-- CARD: BỔ SUNG NHIỀU LỜI GIẢI KHÁC NHAU     -->
+                        <!-- ========================================== -->
+                        <div class="form-group" style="margin-top: 24px;">
+                            <label style="font-weight: 600; font-size: 0.95rem; color: #1e293b;">
+                                <i class="fa-solid fa-lightbulb" style="color: #f59e0b;"></i> Các cách giải khác (Sử dụng Rich Math Editor)
+                            </label>
+                            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 10px;">
+                                Nếu bài toán có nhiều cách giải (Đại số, Hình học, Sơ đồ, Lập luận...), bạn có thể thêm các cách giải khác. Mỗi cách giải sử dụng Rich Math Editor riêng để nhập công thức toán học.
+                            </p>
+                            <div id="extraSolutionsContainer"></div>
+                            <button type="button" id="btnAddSolution" class="btn-secondary" style="margin-top: 8px; font-size: 0.85rem; border: 1px dashed #3b82f6; color: #2563eb; padding: 8px 16px; border-radius: 6px;">
+                                <i class="fa-solid fa-plus"></i> Thêm cách giải khác (Math Editor)
+                            </button>
+                        </div>
+
+                        <!-- ========================================== -->
+                        <!-- CARD CẤU HÌNH RUBRIC CHẤM ĐIỂM (2 OPTION)  -->
+                        <!-- ========================================== -->
+                        <div class="rubric-card-section">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <h3 style="margin: 0; font-size: 1.1rem; color: #1e293b;">
+                                    <i class="fa-solid fa-list-check" style="color: #3b82f6;"></i> Thiết Lập Rubric Chấm Điểm
+                                </h3>
+                            </div>
+
+                            <!-- 2 Option Tabs -->
+                            <div class="rubric-tab-bar">
+                                <button type="button" id="tabManual" class="rubric-tab-btn active">
+                                    <i class="fa-solid fa-pen-to-square"></i> Option 1: Tự nhập Rubric
+                                </button>
+                                <button type="button" id="tabAI" class="rubric-tab-btn">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Option 2: Dùng Rubric mẫu có sẵn
+                                </button>
+                            </div>
+
+                            <!-- PANEL 1: MANUAL RUBRIC -->
+                            <div id="panelManual" class="rubric-panel active">
+                                <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 12px;">
+                                    Tự định nghĩa từng tiêu chí chấm điểm và số điểm tương ứng (Khuyên dùng tổng thang điểm 10).
+                                </p>
+                                <div id="manualRubricList"></div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+                                    <button type="button" id="btnAddManualRow" class="btn-secondary" style="background:#2563eb; color:#fff; border:none; padding:6px 14px; border-radius:6px; font-size:0.85rem; font-weight:600; cursor:pointer;">
+                                        <i class="fa-solid fa-plus"></i> Thêm tiêu chí thủ công
+                                    </button>
+                                    <div>
+                                        <span style="font-weight:700; font-size:0.9rem; color:#1e293b;">Tổng điểm: <span id="lblManualTotal" style="color:#2563eb;">0</span> / 10 điểm</span>
+                                        <div id="warnManualScore" class="warn-score" style="display:none; text-align:right;">⚠️ Tổng điểm chưa đạt 10 điểm</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PANEL 2: AI / TEMPLATES RUBRIC -->
+                            <div id="panelAI" class="rubric-panel">
+                                <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 12px;">
+                                    Chọn một hoặc nhiều mẫu Rubric có sẵn để AI tự động phân tích và sinh tiêu chí chi tiết cho bài này.
+                                </p>
+
+                                <div class="form-group">
+                                    <label style="font-weight:600; font-size:0.88rem;">Chọn Rubric Templates có sẵn:</label>
+                                    <div class="template-checkbox-grid" id="rubricTemplatesContainer">
+                                        <span style="font-size:0.85rem; color:#94a3b8;">⏳ Đang tải Rubric Templates...</span>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: 12px;">
+                                    <button type="button" id="btnGenerateAiRubric" class="btn-secondary" style="background:#3b82f6; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-weight:600;">
+                                        <i class="fa-solid fa-wand-magic-sparkles"></i> Bấm để AI tạo Rubric từ Template
+                                    </button>
+                                </div>
+
+                                <!-- Khung Preview & Edit Rubric sau khi AI sinh -->
+                                <div id="rubricPreviewCard" style="display:none; margin-top:20px; border-top:1px solid #cbd5e1; padding-top:16px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                        <h4 style="margin:0; font-size:1rem; color:#0f172a;">Tiêu chí Rubric AI gợi ý</h4>
+                                        <button type="button" id="btnAddRubricRow" class="btn-secondary" style="font-size:0.8rem; padding:4px 10px;">
+                                            <i class="fa-solid fa-plus"></i> Thêm Tiêu Chí
+                                        </button>
+                                    </div>
+
+                                    <div id="generatedRubricList"></div>
+
+                                    <div style="text-align:right; font-weight:700; font-size:0.9rem; margin-top:8px; color:#1e293b;">
+                                        Tổng điểm AI Rubric: <span id="lblTotalRubricScore" style="color:#2563eb;">0</span> điểm
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="form-actions" style="margin-top: 24px; display: flex; gap: 12px; align-items: center;">
+                            <button type="submit" id="submitBtn" class="btn-primary">
+                                Đăng bài tập
+                            </button>
+                            <button type="button" id="btnCancelEdit" class="btn-secondary" style="display:none;">
+                                <i class="fa-solid fa-rotate-left"></i> Hủy & Tạo bài mới
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer"></div>
+
+    <script src="js/load-components.js"></script>
+    <script type="module" src="js/problem-create.js"></script>
+
+</body>
+
+</html>
